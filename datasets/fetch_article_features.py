@@ -13,7 +13,7 @@ def _enrich_annotations_one_subset(annotations_dataset, processed_article_data, 
     :return: pd.DataFrame annotations_dataset with added columns extra_features
     """
     enriched_dataset = annotations_dataset.copy()
-    original_columns = enriched_dataset.columns
+    original_columns = list(enriched_dataset.columns)
     for section in sections:
         new_feature_names = [f"{section}_{x}" for x in extra_features]
         enriched_dataset = enriched_dataset.merge(

@@ -11,16 +11,16 @@ def single_label_multiclass_annotated_study_design(annotations_filepath, metadat
     """
 
     label_number_to_study_name_mapping = {
-        1: "Meta analysis",
+        1: "Meta analysis", #systematic review and meta-analysis
         2: "Randomized control trial",
         3: "Non-randomized trial",
-        4: "Prospective cohort",
+        4: "Prospective cohort", #prospective observational study
         5: "Time-series analysis",
-        6: "Retrospective cohort",
-        7: "Cross-sectional",
+        6: "Retrospective cohort", #retrospective observational study
+        7: "Cross-sectional", # cross sectional study
         8: "Case control",
-        9: "Case study",
-        10: "Simulation",
+        9: "Case study", #case series
+        10: "Simulation", #simulation
         0: "Other"
     }
     annotations = pd.read_csv(annotations_filepath)

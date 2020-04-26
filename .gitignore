@@ -1,5 +1,6 @@
 *.zip
 *.pkl
+*.csv
 *lock*
 
 # Byte-compiled / optimized / DLL files

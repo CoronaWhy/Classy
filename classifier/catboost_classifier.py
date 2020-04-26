@@ -7,19 +7,7 @@ from common import create_logger
 
 logger = create_logger()
 # https://github.com/catboost/tutorials/blob/2c16945f850503bfaa631176e87588bc5ce0ca1c/text_features/text_features_in_catboost.ipynb
-label_mapping = {
-    1: "Meta analysis",
-    2: "Randomized control trial",
-    3: "Non-randomized trial",
-    4: "Prospective cohort",
-    5: "Time-series analysis",
-    6: "Retrospective cohort",
-    7: "Cross-sectional",
-    8: "Case control",
-    9: "Case study",
-    10: "Simulation",
-    0: "Other"
-}
+
 
 def train_validate_catboost_model(train_data, test_data, train_features, target_feature, text_features, params, ):
     X_train = train_data[train_features]
