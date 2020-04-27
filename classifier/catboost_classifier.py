@@ -4,12 +4,13 @@ import numpy as np
 from sklearn.metrics import accuracy_score, f1_score
 from catboost import CatBoostClassifier, Pool
 from common import create_logger
+from datasets import single_label_multiclass_annotated_study_design
 
 logger = create_logger()
 # https://github.com/catboost/tutorials/blob/2c16945f850503bfaa631176e87588bc5ce0ca1c/text_features/text_features_in_catboost.ipynb
 
 
-def train_validate_catboost_model(train_data, test_data, train_features, target_feature, text_features, params, ):
+def train_validate_catboost_model(train_data, test_data, train_features, target_feature, text_features, params, verbose=True):
     X_train = train_data[train_features]
     y_train = train_data[target_feature]
     X_test = test_data[train_features]
@@ -34,7 +35,7 @@ def train_validate_catboost_model(train_data, test_data, train_features, target_
     }
     params = {**catboost_default_params, **params}
     model = CatBoostClassifier(**params)
-    model.fit(train_pool, eval_set=test_pool, verbose=True)
+    model.fit(train_pool, eval_set=test_pool, verbose=verbose)
     prediction = model.predict(test_pool)
     acc = accuracy_score(y_test, prediction)
     f1 = f1_score(y_test, prediction, average=None)
@@ -46,17 +47,9 @@ def train_validate_catboost_model(train_data, test_data, train_features, target_
 
 if __name__=="__main__":
     data_dir = Path('/media/wwymak/Storage/coronawhy/nlp_datasets')
-    design_labelled_metadata = pd.read_csv(data_dir / 'cord19_study_design_labelled' / 'design.csv')
-    design_labelled_metadata = design_labelled_metadata.rename(columns={
-        "id": "sha"
-    }).dropna()
-    cord19_metadata= pd.read_csv(data_dir/'metadata.csv.zip')
-    logger.info(f"design metadata shape: {design_labelled_metadata.shape}")
-    design_labelled_metadata = design_labelled_metadata.merge(cord19_metadata, left_on="sha", right_on="sha")[["sha", "cord_uid", "label", "title", "abstract"]]
-    design_labelled_metadata = design_labelled_metadata.dropna(subset=['abstract', 'title']).drop_duplicates(subset=['abstract', 'title'])
-    # only 2 items in this class- messes up cv
-    design_labelled_metadata = design_labelled_metadata[design_labelled_metadata.label != 3]
-
+    annotations_filepath = (data_dir / 'cord19_study_design_labelled' / 'design.csv')
+    metadata_filepath = (data_dir/'metadata.csv.zip')
+    design_labelled_metadata = single_label_multiclass_annotated_study_design(annotations_filepath, metadata_filepath)
     logger.info(f"design metadata shape: {design_labelled_metadata.shape}")
     # shuffle dataset
     design_labelled_metadata = design_labelled_metadata[['abstract', 'title', 'label']].sample(frac=1.0)
