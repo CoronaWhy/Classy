@@ -10,22 +10,59 @@ logger = create_logger()
 # https://github.com/catboost/tutorials/blob/2c16945f850503bfaa631176e87588bc5ce0ca1c/text_features/text_features_in_catboost.ipynb
 
 
+# def train_validate_catboost_model(train_data, test_data, train_features, target_feature, text_features, params, verbose=True):
+#     X_train = train_data[train_features]
+#     y_train = train_data[target_feature]
+#     X_test = test_data[train_features]
+#     y_test = test_data[target_feature]
+#
+#     train_pool = Pool(
+#         X_train,
+#         y_train,
+#         feature_names=list(train_features),
+#         text_features=text_features)
+#     test_pool = Pool(
+#         X_test,
+#         y_test,
+#         feature_names=list(train_features),
+#         text_features=text_features)
+#
+#     catboost_default_params = {
+#         'iterations': 1000,
+#         'learning_rate': 0.03,
+#         'eval_metric': 'Accuracy',
+#         'task_type': 'GPU'
+#     }
+#     params = {**catboost_default_params, **params}
+#     model = CatBoostClassifier(**params)
+#     model.fit(train_pool, eval_set=test_pool, verbose=verbose)
+#     prediction = model.predict(test_pool)
+#     acc = accuracy_score(y_test, prediction)
+#     f1 = f1_score(y_test, prediction, average=None)
+#     f1_macro = f1_score(y_test, prediction, average="macro")
+#     logger.info(f"accuracy: {acc}")
+#     logger.info(f"f1: {f1}")
+#     logger.info(f"f1_macro: {f1_macro}")
+#     return model, acc, f1, f1_macro, params
+
 def train_validate_catboost_model(train_data, test_data, train_features, target_feature, text_features, params, verbose=True):
     X_train = train_data[train_features]
     y_train = train_data[target_feature]
-    X_test = test_data[train_features]
-    y_test = test_data[target_feature]
-
     train_pool = Pool(
         X_train,
         y_train,
         feature_names=list(train_features),
         text_features=text_features)
-    test_pool = Pool(
-        X_test,
-        y_test,
-        feature_names=list(train_features),
-        text_features=text_features)
+
+    if test_data is not None:
+        X_test = test_data[train_features]
+        y_test = test_data[target_feature]
+
+        test_pool = Pool(
+            X_test,
+            y_test,
+            feature_names=list(train_features),
+            text_features=text_features)
 
     catboost_default_params = {
         'iterations': 1000,
@@ -36,14 +73,17 @@ def train_validate_catboost_model(train_data, test_data, train_features, target_
     params = {**catboost_default_params, **params}
     model = CatBoostClassifier(**params)
     model.fit(train_pool, eval_set=test_pool, verbose=verbose)
-    prediction = model.predict(test_pool)
-    acc = accuracy_score(y_test, prediction)
-    f1 = f1_score(y_test, prediction, average=None)
-    f1_macro = f1_score(y_test, prediction, average="macro")
-    logger.info(f"accuracy: {acc}")
-    logger.info(f"f1: {f1}")
-    logger.info(f"f1_macro: {f1_macro}")
-    return model, acc, f1, f1_macro, params
+
+    if test_data is not None:
+        prediction = model.predict(test_pool)
+        acc = accuracy_score(y_test, prediction)
+        f1 = f1_score(y_test, prediction, average=None)
+        f1_macro = f1_score(y_test, prediction, average="macro")
+        logger.info(f"accuracy: {acc}")
+        logger.info(f"f1: {f1}")
+        logger.info(f"f1_macro: {f1_macro}")
+        return model, acc, f1, f1_macro, params
+    return model
 
 if __name__=="__main__":
     data_dir = Path('/media/wwymak/Storage/coronawhy/nlp_datasets')
