@@ -1,7 +1,10 @@
 # Classy
 Supervised classification of Study designs
 
-Some useful links:
+## Our purpose:
+https://docs.google.com/document/d/1OVDxoY1M1XJUMI6YG1g5dubGx3aB1ObfgE2gucnNEEg/edit
+
+### Some useful links:
 
 from the organiser/curators of the CORD-19 competition/dataset
 - https://docs.google.com/spreadsheets/d/1t2e3CHGxHJBiFgHeW0dfwtvCG4x0CDCzcTFX7yz9Z2E/edit#gid=1217643351
