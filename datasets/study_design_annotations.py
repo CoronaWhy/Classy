@@ -9,18 +9,16 @@ def single_label_multiclass_annotated_study_design(annotations_filepath, metadat
     :param metadata_filepath:
     :return: pd.DataFrame of annotations, with columns ["sha", "cord_uid",  "title", "abstract", "label", "label_str"]
     """
-
     label_number_to_study_name_mapping = {
-        1: "Meta analysis", #systematic review and meta-analysis
+        1: "Systematic review",
         2: "Randomized control trial",
         3: "Non-randomized trial",
-        4: "Prospective cohort", #prospective observational study
-        5: "Time-series analysis",
-        6: "Retrospective cohort", #retrospective observational study
-        7: "Cross-sectional", # cross sectional study
-        8: "Case control",
-        9: "Case study", #case series
-        10: "Simulation", #simulation
+        4: "Prospective observational",
+        5: "Time-to-event analysis",
+        6: "Retrospective observational",
+        7: "Cross-sectional",
+        8: "Case series",
+        9: "Modeling",
         0: "Other"
     }
     annotations = pd.read_csv(annotations_filepath)

@@ -48,6 +48,15 @@ logger = create_logger()
 def train_validate_catboost_model(train_data, test_data, train_features, target_feature, text_features, params, verbose=True):
     X_train = train_data[train_features]
     y_train = train_data[target_feature]
+    catboost_default_params = {
+        'iterations': 1000,
+        'learning_rate': 0.03,
+        'eval_metric': 'Accuracy',
+        'task_type': 'GPU'
+    }
+    params = {**catboost_default_params, **params}
+    model = CatBoostClassifier(**params)
+
     train_pool = Pool(
         X_train,
         y_train,
@@ -63,18 +72,8 @@ def train_validate_catboost_model(train_data, test_data, train_features, target_
             y_test,
             feature_names=list(train_features),
             text_features=text_features)
+        model.fit(train_pool, eval_set=test_pool, verbose=verbose)
 
-    catboost_default_params = {
-        'iterations': 1000,
-        'learning_rate': 0.03,
-        'eval_metric': 'Accuracy',
-        'task_type': 'GPU'
-    }
-    params = {**catboost_default_params, **params}
-    model = CatBoostClassifier(**params)
-    model.fit(train_pool, eval_set=test_pool, verbose=verbose)
-
-    if test_data is not None:
         prediction = model.predict(test_pool)
         acc = accuracy_score(y_test, prediction)
         f1 = f1_score(y_test, prediction, average=None)
@@ -83,7 +82,10 @@ def train_validate_catboost_model(train_data, test_data, train_features, target_
         logger.info(f"f1: {f1}")
         logger.info(f"f1_macro: {f1_macro}")
         return model, acc, f1, f1_macro, params
-    return model
+
+    else:
+        model.fit(train_pool, verbose=verbose)
+        return model
 
 if __name__=="__main__":
     data_dir = Path('/media/wwymak/Storage/coronawhy/nlp_datasets')
