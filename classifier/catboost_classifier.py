@@ -3,6 +3,7 @@ from pathlib import Path
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score
 from catboost import CatBoostClassifier, Pool
+from catboost.utils import get_confusion_matrix
 from common import create_logger
 from datasets import single_label_multiclass_annotated_study_design
 
@@ -78,10 +79,11 @@ def train_validate_catboost_model(train_data, test_data, train_features, target_
         acc = accuracy_score(y_test, prediction)
         f1 = f1_score(y_test, prediction, average=None)
         f1_macro = f1_score(y_test, prediction, average="macro")
+        confusion_matrix = get_confusion_matrix(model, test_pool)
         logger.info(f"accuracy: {acc}")
         logger.info(f"f1: {f1}")
         logger.info(f"f1_macro: {f1_macro}")
-        return model, acc, f1, f1_macro, params
+        return model, acc, f1, f1_macro, confusion_matrix, params
 
     else:
         model.fit(train_pool, verbose=verbose)
@@ -101,7 +103,7 @@ if __name__=="__main__":
     for i in range(5):
         test = design_labelled_metadata.iloc[i * test_set_len : (i+1)* test_set_len]
         train = design_labelled_metadata[~design_labelled_metadata.index.isin(test.index)]
-        model, acc, f1, f1_macro, params = train_validate_catboost_model(
+        model, acc, f1, f1_macro,confusion_matrix, params = train_validate_catboost_model(
             train, test,
             ['abstract', 'title'],
             'label',
@@ -111,6 +113,7 @@ if __name__=="__main__":
             "f1": f1,
             "acc": acc,
             'f1_macro': f1_macro,
+            'confusion_matrix': confusion_matrix
         })
 
     results = pd.DataFrame(results)

@@ -17,7 +17,8 @@ def _enrich_annotations_one_subset(annotations_dataset, processed_article_data, 
     for section in sections:
         new_feature_names = [f"{section}_{x}" for x in extra_features]
         enriched_dataset = enriched_dataset.merge(
-            processed_article_data[processed_article_data.section.str.contains(section)],
+            processed_article_data[processed_article_data.section.notnull() &
+                                   processed_article_data.section.astype(str).str.contains(section)],
             left_on="cord_uid", right_on="cord_uid",how="left")[original_columns + extra_features]
         enriched_dataset = enriched_dataset.rename(columns={
             k: v for k, v in zip(extra_features, new_feature_names)

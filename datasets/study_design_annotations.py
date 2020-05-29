@@ -54,7 +54,7 @@ def coronawhy_annotated_study_design(annotations_filepath, metadata_filepath):
     colname_to_number_mapping = {
         k: idx for idx, k in enumerate(['in_silico', 'in_vitro',
                            'in_vivo', 'RCT_review', 'RCT', 'controlled_trial_non_randomised',
-                           'comparative_study', 'descriptive_study', 'meta_study'])
+                           'comparative_study', 'descriptive_study', 'meta_study', 'others'])
     }
     annotations = pd.read_csv(annotations_filepath)
     cord19_metadata = pd.read_csv(metadata_filepath)
@@ -66,28 +66,28 @@ def coronawhy_annotated_study_design(annotations_filepath, metadata_filepath):
                                     right_on="cord_uid", suffixes=("", "_duplicated"))[
         ["cord_uid",  "title", "abstract", 'in_silico', 'in_vitro',
        'in_vivo', 'RCT_review', 'RCT', 'controlled_trial_non_randomised',
-       'comparative_study', 'descriptive_study', 'meta_study']]
+       'comparative_study', 'descriptive_study', 'meta_study', 'others']]
     annotations = annotations.dropna(subset=['abstract', 'title']).drop_duplicates(
         subset=['abstract', 'title']).dropna(subset=['in_silico', 'in_vitro',
        'in_vivo', 'RCT_review', 'RCT', 'controlled_trial_non_randomised',
-       'comparative_study', 'descriptive_study', 'meta_study'],  how='all')
+       'comparative_study', 'descriptive_study', 'meta_study', 'others'],  how='all')
 
     annotations[['in_silico', 'in_vitro', 'in_vivo', 'RCT_review', 'RCT',
                  'controlled_trial_non_randomised',
-                 'comparative_study', 'descriptive_study', 'meta_study']] = \
+                 'comparative_study', 'descriptive_study', 'meta_study', 'others']] = \
         annotations[['in_silico', 'in_vitro','in_vivo', 'RCT_review', 'RCT',
                      'controlled_trial_non_randomised', 'comparative_study', 'descriptive_study',
-                     'meta_study']].applymap(
+                     'meta_study', 'others']].applymap(
         lambda x: 0 if type(x) == float and np.isnan(x) else 1)
     # select only those with unique lables
     class_instances = annotations[['in_silico', 'in_vitro',
                            'in_vivo', 'RCT_review', 'RCT', 'controlled_trial_non_randomised',
-                           'comparative_study', 'descriptive_study', 'meta_study']].sum(axis=1)
+                           'comparative_study', 'descriptive_study', 'meta_study', 'others']].sum(axis=1)
     annotations = annotations.loc[class_instances[class_instances==1].index]
     #reverse one hot
     annotations['label_string'] = annotations[['in_silico', 'in_vitro',
                            'in_vivo', 'RCT_review', 'RCT', 'controlled_trial_non_randomised',
-                           'comparative_study', 'descriptive_study', 'meta_study']].idxmax(1)
+                           'comparative_study', 'descriptive_study', 'meta_study', 'others']].idxmax(1)
 
     annotations['label'] = annotations['label_string'].apply(colname_to_number_mapping.get)
 
