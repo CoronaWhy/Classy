@@ -1,3 +1,4 @@
 from .study_design_annotations import single_label_multiclass_annotated_study_design, coronawhy_annotated_study_design
+from .study_type_annotations_v2_with_metadata import study_type_annotations_v2
 from .fetch_article_features import enrich_annotations
 from .specter_embeddings import annotations_with_specter_embeddings

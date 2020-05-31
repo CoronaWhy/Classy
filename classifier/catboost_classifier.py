@@ -46,7 +46,7 @@ logger = create_logger()
 #     logger.info(f"f1_macro: {f1_macro}")
 #     return model, acc, f1, f1_macro, params
 
-def train_validate_catboost_model(train_data, test_data, train_features, target_feature, text_features, params, verbose=True):
+def train_validate_catboost_model(train_data, test_data, train_features, target_feature, text_features, params, verbose=True, logging=True):
     X_train = train_data[train_features]
     y_train = train_data[target_feature]
     catboost_default_params = {
@@ -80,9 +80,10 @@ def train_validate_catboost_model(train_data, test_data, train_features, target_
         f1 = f1_score(y_test, prediction, average=None)
         f1_macro = f1_score(y_test, prediction, average="macro")
         confusion_matrix = get_confusion_matrix(model, test_pool)
-        logger.info(f"accuracy: {acc}")
-        logger.info(f"f1: {f1}")
-        logger.info(f"f1_macro: {f1_macro}")
+        if logging:
+            logger.info(f"accuracy: {acc}")
+            logger.info(f"f1: {f1}")
+            logger.info(f"f1_macro: {f1_macro}")
         return model, acc, f1, f1_macro, confusion_matrix, params
 
     else:

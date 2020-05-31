@@ -1,3 +1,6 @@
+"""
+PLEASE IGNORE (WIP using snorkel)
+"""
 import pandas as pd
 from snorkel.labeling import labeling_function
 
