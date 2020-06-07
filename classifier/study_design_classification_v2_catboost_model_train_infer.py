@@ -21,6 +21,9 @@ from tqdm import tqdm
 RETRAIN_MODEL = False
 CATBOOST_MODEL_NAME="study_design_catboost_classifier_7_June_2020.cbm"
 
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
 if __name__=="__main__":
     logger = create_logger()
     df = study_type_annotations_v2()
@@ -68,11 +71,11 @@ if __name__=="__main__":
             train_features=['abstract', 'title'],
             target_feature='label',
             text_features=['abstract', 'title'], params=params, verbose=False, logging=False)
-        model.save_model(CATBOOST_MODEL_NAME)
+        model.save_model(str(Path(__location__)/CATBOOST_MODEL_NAME))
 
     else:
-        model = CatBoostClassifier()
-        model.load_model(CATBOOST_MODEL_NAME)
+        model =  CatBoostClassifier()
+        model.load_model(str(Path(__location__)/CATBOOST_MODEL_NAME))
 
     test_data = pd.read_csv("/home/wwymak/coronawhy/pubmed_mining/data/metadata_v22.csv")
 
