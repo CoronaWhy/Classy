@@ -10,13 +10,16 @@ import numpy as np
 from itertools import product
 from datasets import study_type_annotations_v2
 from classifier import train_validate_catboost_model
-from catboost import Pool
+from catboost import Pool, CatBoostClassifier
 
 from datetime import datetime
 import matplotlib.pyplot as plt
 import joblib
 from tqdm import tqdm
 
+# set this to True if you want to retrain the model e.g. with new data
+RETRAIN_MODEL = False
+CATBOOST_MODEL_NAME="study_design_catboost_classifier_7_June_2020.cbm"
 
 if __name__=="__main__":
     logger = create_logger()
@@ -58,12 +61,18 @@ if __name__=="__main__":
         "iterations": 2000
     }
 
-    params = {**extra_text_params, **boosting_params}
-    model = train_validate_catboost_model(
-        train_data=model_df, test_data=None,
-        train_features=['abstract', 'title'],
-        target_feature='label',
-        text_features=['abstract', 'title'], params=params, verbose=False, logging=False)
+    if RETRAIN_MODEL:
+        params = {**extra_text_params, **boosting_params}
+        model = train_validate_catboost_model(
+            train_data=model_df, test_data=None,
+            train_features=['abstract', 'title'],
+            target_feature='label',
+            text_features=['abstract', 'title'], params=params, verbose=False, logging=False)
+        model.save_model(CATBOOST_MODEL_NAME)
+
+    else:
+        model = CatBoostClassifier()
+        model.load_model(CATBOOST_MODEL_NAME)
 
     test_data = pd.read_csv("/home/wwymak/coronawhy/pubmed_mining/data/metadata_v22.csv")
 
